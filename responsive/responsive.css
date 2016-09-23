@@ -1,0 +1,39 @@
+/*
+ * Yichuan Philip Ma
+ * yma03
+ * Yichuan.ma@tufts.edu
+ * 9/23/16
+ * responsive.css
+ * The CSS required for making the Homer image respond to changing the
+ * browser's screen size.
+ */
+
+.homer { /* default homer */
+    width: 312px;
+    height: 312px;
+    background: url(homer.jpg) 0 0px;
+}
+
+@media (max-width: 1200px) {
+    .homer {
+        width: 312px;
+        height: 312px;
+        background: url(homer.jpg) -313px 0px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .homer {
+        width: 312px;
+        height: 312px;
+        background: url(homer.jpg) 0px -313px;
+    }
+}
+
+@media (max-width: 800px) {
+    .homer {
+        width: 312px;
+        height: 312px;
+        background: url(homer.jpg) -313px -313px;
+    }
+}
