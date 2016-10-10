@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Classic Movie</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+<h1 id="title">Classic Movie</h1>
+
+<video src="https://www.cs.tufts.edu/comp/20/classic.mp4" id="classic_video" controls></video>
+<div id="movie_quotes"></div>
+
+<script>
+	// Complete this section and create a CSS file named style.css
+    function noSubs() {
+        subtitle.innerHTML = "";
+    }
+
+    var video = document.getElementById("classic_video");
+    var subtitle = document.getElementById("movie_quotes");
+    // Add all subtitles into the video.
+    video.addEventListener("timeupdate", function() {
+        if (video.currentTime > 23.5 && video.currentTime < 26) {
+            subtitle.innerHTML = "<p>Igor: DR. FRANKENSTEIN?!?!?</p>";
+        } else if (video.currentTime > 31 && video.currentTime < 32) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: Frokensteen.</p>";
+        } else if (video.currentTime > 34 && video.currentTime < 35.5) {
+            subtitle.innerHTML = "<p>Igor: You're putting me on.</p>";
+        } else if (video.currentTime > 36 && video.currentTime < 38.5) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: No, it\'s pronounced, \"Frokensteen\".</p>";
+        } else if (video.currentTime > 39.5 && video.currentTime < 41.5) {
+            subtitle.innerHTML = "<p>Igor: Do you also say Froaderick?</p>";
+        } else if (video.currentTime > 42 && video.currentTime < 43.5) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: No... \"Frederick.\"</p>";
+        } else if (video.currentTime > 44 && video.currentTime < 47) {
+            subtitle.innerHTML = "<p>Igor: Well, why isn't it \'Froaderick Frokensteen\'?</p>";
+        } else if (video.currentTime > 47 && video.currentTime < 49.5) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: It isn't, it's \"Frederick Frokensteen\"</p>";
+        } else if (video.currentTime > 50 && video.currentTime < 51) {
+            subtitle.innerHTML = "<p>Igor: I see.</p>";
+        } else if (video.currentTime > 52 && video.currentTime < 53.5) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: You must be Igor. [He pronounces it ee-gor.]</p>";
+        } else if (video.currentTime > 53.5 && video.currentTime < 55.5) {
+            subtitle.innerHTML = "<p>Igor: No, it's pronounced \"eye-gor.\"</p>";
+        } else if (video.currentTime > 56.5 && video.currentTime < 58.5) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: But they told me it was \"ee-gor\"...</p>";
+        } else if (video.currentTime > 58.5 && video.currentTime < 60) {
+            subtitle.innerHTML = "<p>Igor: Well, they were wrong then, weren't they?</p>";
+        } else if (video.currentTime > 61 && video.currentTime < 64) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: Uh, you were sent here by Herr Falkstein, weren't you?</p>";
+        } else if (video.currentTime > 64 && video.currentTime < 68) {
+            subtitle.innerHTML = "<p>Igor: Yes. My grandfather used to work for your grandfather.</p>";
+        } else if (video.currentTime > 70.5 && video.currentTime < 71.5) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: How nice.</p>";
+        } else if (video.currentTime > 72 && video.currentTime < 74) {
+            subtitle.innerHTML = "<p>Igor: Of course the rates have gone up.</p>";
+        } else if (video.currentTime > 74 && video.currentTime < 88) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: Of course, of course, I'm sure we'll get along splendidly. Oh, sorry, I uh, you know I don't mean to embarrass you, but I'm rather a brilliant surgeon. Perhaps I can help you with that hump.</p>";
+        } else if (video.currentTime > 89 && video.currentTime < 90) {
+            subtitle.innerHTML = "<p>Igor: What hump?</p>";
+        } else if (video.currentTime > 95.5) {
+            subtitle.innerHTML = "<p>Dr. Frederick Frankenstein: Let's go...</p>";
+        } else { // Only display subtitles when necessary
+            noSubs();
+        }
+    }, false);
+    // Subtitles cease to be displayed once the video has ended.
+    video.addEventListener("ended", noSubs, false);
+</script>
+</body>
+</html>	
