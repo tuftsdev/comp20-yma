@@ -1,0 +1,10 @@
+html, body {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+}
+
+#map_canvas {
+	height: 100%;
+}
