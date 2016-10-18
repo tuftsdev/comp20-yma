@@ -95,7 +95,7 @@ function init() {
 	var request = new XMLHttpRequest();
 	var me = new google.maps.LatLng(myLat, myLng);
 	var map = new google.maps.Map(document.getElementById("map_canvas"), {
-		zoom: 12,
+		zoom: 14,
 		center: me,
 		mapTypeId: 'roadmap'
 	});
@@ -136,25 +136,41 @@ function renderMap(map) {
 		infowindow.open(map, myMarker);
 	});
 
+    // Process each station; that is, add station markers and find the nearest
+    // station to you.
+    var R = 6371; // kilometres
+    var dists = []; // store all distances between you and stations
 	for (var i = 0; i < stations.length; i++) {
-		addStation(stations[i], map);
+		addStation(stations[i], map); // Add marker for each station
+        // Calculate distance using Haversine formula.
+        var x = myLng - stations[i].stop_long;
+        var y = myLat - stations[i].stop_lat;
+        var dx = toRad(x);
+        var dy = toRad(y);
+        var a = Math.pow(Math.sin(dy / 2), 2) + Math.cos(toRad(myLat)) *
+            Math.cos(toRad(stations[i].stop_lat)) * Math.pow(Math.sin(dx / 2), 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c;
+        dists[i] = d;
 	}
+    console.log(dists);
 
+    // Draw the Red line on the map, including the branch
     var stationCoords = [];
     for (var i = 0; i <= 16; i++) {
         var staCoord = {lat: stations[i].stop_lat, lng: stations[i].stop_long};
         stationCoords.push(staCoord);
     }
-    var branchCoords = [
+    var branchCoords = [ // coords for the branch line
         {lat: stations[12].stop_lat, lng: stations[12].stop_long}
     ];
     for (var i = 17; i < stations.length; i++) {
         var staCoord = {lat: stations[i].stop_lat, lng: stations[i].stop_long};
         branchCoords.push(staCoord);
     }
-    var mainLine = makeLine(stationCoords);
+    var mainLine = makeLine(stationCoords, '#EE1111');
     mainLine.setMap(map);
-    var BBranch = makeLine(branchCoords);
+    var BBranch = makeLine(branchCoords, '#EE1111');
     BBranch.setMap(map);
 }
 
@@ -175,11 +191,15 @@ function addStation(station, map) {
 	});
 }
 
-function makeLine(coords) {
+function makeLine(coords, colour) {
     return new google.maps.Polyline({
         path: coords,
         geodesic: true,
-        strokeColor: '#EE1111',
+        strokeColor: colour,
         strokeWeight: 2
     });
+}
+
+function toRad(r) {
+    return r * Math.PI / 180;
 }
