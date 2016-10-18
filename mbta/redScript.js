@@ -88,6 +88,8 @@ var stations = [{
 	stop_lat: 42.2078543,
 	stop_long: -71.0011385
 }];
+var request = new XMLHttpRequest();
+var data = "";
 
 function init() {
 	var myLat = 42.353; // Center the map over Boston initially
@@ -116,22 +118,27 @@ function getMyLocation(map) {
 
 function renderMap(map) {
 	me = new google.maps.LatLng(myLat, myLng);
-    /*var request = new XMLHttpRequest();
+
+    // Get train info from the T's API and add to each station marker.
     request.open("get", "https://rocky-taiga-26352.herokuapp.com/redline.json", true);
-    request.send(null);
-    var trips = JSON.parse(request.responseText);
-    console.log(trips);
-    */
+    request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+            theData = request.responseText;
+            schedules = JSON.parse(theData);
+            for (var i = 0; i < stations.length; i++) {
+                addStation(stations[i], map);
+            }
+        }
+    }
+    request.send();
 				
 	// Center map to my location
 	map.panTo(me);
 
-    // Process each station; that is, add station markers and find the nearest
-    // station to you.
+    // Add station markers and find the nearest station to you.
     var R = 3959; // miles
     var dists = []; // store all distances between you and stations
 	for (var i = 0; i < stations.length; i++) {
-		addStation(stations[i], map); // Add marker for each station
         // Calculate distance using Haversine formula. Learned from Stack Overflow.
         // See README.md for full URL citation.
         var x = myLng - stations[i].stop_long;
@@ -201,6 +208,7 @@ function renderMap(map) {
 }
 
 function addStation(station, map) {
+    console.log(schedules);
 	var pos = new google.maps.LatLng(station.stop_lat, station.stop_long);
 	var stationMarker = new google.maps.Marker({
 		position: pos,
