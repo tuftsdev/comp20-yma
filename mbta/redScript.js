@@ -120,25 +120,10 @@ function renderMap(map) {
 				
 	// Center map to my location
 	map.panTo(me);
-    
-	// Make and add marker for my current location
-	var myMarker = new google.maps.Marker({
-		position: me,
-		title: ("I'm HERE at " + myLat + ", " + myLng)
-	});
-	myMarker.setMap(map);
-
-	// Add info marker/click event for your location
-	var infowindow = new google.maps.InfoWindow({
-		content: myMarker.title
-	});
-	myMarker.addListener('click', function() {
-		infowindow.open(map, myMarker);
-	});
 
     // Process each station; that is, add station markers and find the nearest
     // station to you.
-    var R = 6371; // kilometres
+    var R = 3959; // miles
     var dists = []; // store all distances between you and stations
 	for (var i = 0; i < stations.length; i++) {
 		addStation(stations[i], map); // Add marker for each station
@@ -153,7 +138,31 @@ function renderMap(map) {
         var d = R * c;
         dists[i] = d;
 	}
-    console.log(dists);
+    var minDist = Number.MAX_SAFE_INTEGER;
+    var nearestSta = "";
+    for (var i = 0; i < dists.length; i++) {
+        if (dists[i] < minDist) {
+            minDist = dists[i];
+            nearestSta = stations[i].stop_name;
+        }
+    }
+
+    // Make and add marker for my current location
+    var myMarker = new google.maps.Marker({
+        position: me,
+        title: ("I'm HERE! My nearest red line T station is " + nearestSta +
+            ",<br/>which is " + minDist.toFixed(2) + " miles (" +
+            ((minDist * 1.609).toFixed(2)) + " km) away.")
+    });
+    myMarker.setMap(map);
+
+    // Add info marker/click event for your location
+    var infowindow = new google.maps.InfoWindow({
+        content: myMarker.title
+    });
+    myMarker.addListener('click', function() {
+        infowindow.open(map, myMarker);
+    });
 
     // Draw the Red line on the map, including the branch
     var stationCoords = [];
