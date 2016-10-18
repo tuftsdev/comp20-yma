@@ -8,15 +8,15 @@ var stations = [{
 	stop_lat: 42.39674,
 	stop_long: -71.121815
 }, {
-	stop_name: "Porter",
+	stop_name: "Porter Square",
 	stop_lat: 42.3884,
 	stop_long: -71.11914899999999
 }, {
-	stop_name: "Harvard",
+	stop_name: "Harvard Square",
 	stop_lat: 42.373362,
 	stop_long: -71.118956
 }, {
-	stop_name: "Central",
+	stop_name: "Central Square",
 	stop_lat: 42.365486,
 	stop_long: -71.103802
 }, {
@@ -76,7 +76,7 @@ var stations = [{
 	stop_lat: 42.2665139,
 	stop_long: -71.0203369
 }, {
-	stop_name: "Quincy Centre",
+	stop_name: "Quincy Center",
 	stop_lat: 42.251809,
 	stop_long: -71.005409
 }, {
@@ -92,7 +92,6 @@ var stations = [{
 function init() {
 	var myLat = 42.353; // Center the map over Boston initially
 	var myLng = -71.081;
-	var request = new XMLHttpRequest();
 	var me = new google.maps.LatLng(myLat, myLng);
 	var map = new google.maps.Map(document.getElementById("map_canvas"), {
 		zoom: 14,
@@ -117,6 +116,12 @@ function getMyLocation(map) {
 
 function renderMap(map) {
 	me = new google.maps.LatLng(myLat, myLng);
+    /*var request = new XMLHttpRequest();
+    request.open("get", "https://rocky-taiga-26352.herokuapp.com/redline.json", true);
+    request.send(null);
+    var trips = JSON.parse(request.responseText);
+    console.log(trips);
+    */
 				
 	// Center map to my location
 	map.panTo(me);
@@ -127,7 +132,8 @@ function renderMap(map) {
     var dists = []; // store all distances between you and stations
 	for (var i = 0; i < stations.length; i++) {
 		addStation(stations[i], map); // Add marker for each station
-        // Calculate distance using Haversine formula.
+        // Calculate distance using Haversine formula. Learned from Stack Overflow.
+        // See README.md for full URL citation.
         var x = myLng - stations[i].stop_long;
         var y = myLat - stations[i].stop_lat;
         var dx = toRad(x);
@@ -140,12 +146,23 @@ function renderMap(map) {
 	}
     var minDist = Number.MAX_SAFE_INTEGER;
     var nearestSta = "";
+    var nearestCoords = {lat: 0, lng: 0};
     for (var i = 0; i < dists.length; i++) {
         if (dists[i] < minDist) {
             minDist = dists[i];
             nearestSta = stations[i].stop_name;
+            nearestCoords.lat = stations[i].stop_lat;
+            nearestCoords.lng = stations[i].stop_long;
         }
     }
+    var way = [me, nearestCoords];
+    var wayline = new google.maps.Polyline({
+        path: way,
+        geodesic: true,
+        strokeColor: '#111111',
+        strokeWeight: 3
+    });
+    wayline.setMap(map);
 
     // Make and add marker for my current location
     var myMarker = new google.maps.Marker({
