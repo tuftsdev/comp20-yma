@@ -150,9 +150,9 @@ function renderMap(map) {
     // Make and add marker for my current location
     var myMarker = new google.maps.Marker({
         position: me,
-        title: ("I'm HERE! My nearest red line T station is " + nearestSta +
-            ",<br/>which is " + minDist.toFixed(2) + " miles (" +
-            ((minDist * 1.609).toFixed(2)) + " km) away.")
+        title: ("<h2>I'm HERE!</h2><h4>My nearest red line T station is " +
+            nearestSta + ",<br/>which is " + minDist.toFixed(2) + " miles (" +
+            ((minDist * 1.60934).toFixed(2)) + " km) away.</h4>")
     });
     myMarker.setMap(map);
 
