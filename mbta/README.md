@@ -15,4 +15,8 @@ onreadystatechange handler function when the API returns 200, and assuring that
 an alert window for a 404 return from the API is acceptable, including its
 GET 404 error on the console.
 
+Code for Haversine formula learned from
+http://stackoverflow.com/questions/14560999/using-the-haversine-formula-in-javascript
+http://www.movable-type.co.uk/scripts/latlong.html
+
 Hours spent on this assignment: 13
