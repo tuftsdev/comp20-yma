@@ -1,3 +1,15 @@
+/*
+ * Philip Ma
+ * yma03
+ * Yichuan.ma@tufts.edu
+ * COMP 20 Assignment 2
+ * MBTA Red Line Map/Schedule closest to you.
+ * redScript.js
+ * Creates map, draws markers and polylines on map, gets train info from MBTA
+ * API, and displays the info on infowindows that show up when a station icon
+ * is clicked. Also gets user's geolocation and puts that on map.
+ */
+
 // a list of all stations including their lat/long coordinates, all hard coded
 var stations = [{
 	stop_name: "Alewife",
@@ -89,9 +101,8 @@ var stations = [{
 	stop_long: -71.0011385
 }];
 var request = new XMLHttpRequest();
-var data = "";
 
-function init() {
+function init() { // Called when HTML body is loaded
 	var myLat = 42.353; // Center the map over Boston initially
 	var myLng = -71.081;
 	var me = new google.maps.LatLng(myLat, myLng);
@@ -103,6 +114,7 @@ function init() {
 	getMyLocation(map);
 }
 
+// This program only works with modern browsers with geolocation.
 function getMyLocation(map) {
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -123,18 +135,19 @@ function renderMap(map) {
     request.open("get", "https://rocky-taiga-26352.herokuapp.com/redline.json", true);
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
-            if (request.status === 200) {
-                theData = request.responseText;
+            if (request.status === 200) { // successful response
+                theData = request.responseText; // read data once
                 schedules = JSON.parse(theData);
+                // Add markers with schedule information to each station, as long as
+                // data is read in.
                 for (var i = 0; i < stations.length; i++) {
                     addStation(stations[i], map, i);
                 }
-            } else {
+            } else { // Sometimes the API's response goes awry.
                 alert("Something went wrong. Sorry! Please refresh.");
             }
         }
     }
-    //if (request.status != 200) request.abort();
     request.send();
 
 	// Center map to my location
@@ -167,6 +180,7 @@ function renderMap(map) {
             nearestCoords.lng = stations[i].stop_long;
         }
     }
+    // Make polyline between me and nearest station.
     var way = [me, nearestCoords];
     var wayline = new google.maps.Polyline({
         path: way,
@@ -212,7 +226,13 @@ function renderMap(map) {
     BBranch.setMap(map);
 }
 
+/* Called within a for loop to place markers for each station.
+ * Arguments: -station is current iterated station object in loop
+ *            -map is the Google map object, not global
+ *            -ind is current index in loop. Not global.
+ */
 function addStation(station, map, ind) {
+    // Get time until next train to each destination for each station
     // letters are as indicated on 01800s cars on the T.
     var nextA = Number.MAX_SAFE_INTEGER; // to Ashmont
     var nextB = Number.MAX_SAFE_INTEGER; // to Braintree
@@ -233,10 +253,13 @@ function addStation(station, map, ind) {
             }
         }
     }
+    // Convert each seconds value into minutes
     nextA = Math.ceil(nextA / 60);
     nextB = Math.ceil(nextB / 60);
     nextC = Math.ceil(nextC / 60);
+    // String to be displayed on station infowindow
     var schedString = "To Alewife in " + plural(nextC); // All trains go to Alewife
+    // Display info specific to a branch. e.g. if on Ashmont branch, don't display Braintree train info.
     if (ind < 17) schedString += "<br/>To Ashmont in " + plural(nextA);
     if (ind > 16 || ind < 13) schedString += "<br/>To Braintree in " + plural(nextB);
     if (schedules["TripList"]["Trips"].length == 0) { // if the T is closed.
@@ -245,7 +268,7 @@ function addStation(station, map, ind) {
     var pos = new google.maps.LatLng(station.stop_lat, station.stop_long);
 	var stationMarker = new google.maps.Marker({
 		position: pos,
-        icon: "t.png",
+        icon: "t.png", // customized red T sign
 		title: ("<h3>" + station.stop_name + "</h3>Next trains:<br/>" + schedString)
 	});
 	stationMarker.setMap(map);
@@ -258,6 +281,11 @@ function addStation(station, map, ind) {
 	});
 }
 
+/* Draw a red polyline. Called again to draw Braintree branch.
+ * Arguments: -coords is list of LatLng objects for the polyline
+ *            -colour is color of polyline, in '#FFFFFF' format, as specified in
+ *             the Google Maps API documentation.
+ */
 function makeLine(coords, colour) {
     return new google.maps.Polyline({
         path: coords,
@@ -267,11 +295,17 @@ function makeLine(coords, colour) {
     });
 }
 
+/* Returns an angle (difference between 2 lat coordinates or 2 long coordinates)
+ * in radians.
+ */
 function toRad(r) {
     return r * Math.PI / 180;
 }
 
+/* Returns a string for whether t > 1.
+ * t is in minutes.
+ */
 function plural(t) {
-    if (t == 1) return "" + t + " minute.";
+    if (t === 1) return "" + t + " minute.";
     else return "" + t + " minutes.";
 }
