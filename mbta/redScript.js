@@ -122,18 +122,21 @@ function renderMap(map) {
     // Get train info from the T's API and add to each station marker.
     request.open("get", "https://rocky-taiga-26352.herokuapp.com/redline.json", true);
     request.onreadystatechange = function() {
-        if (request.readyState == 4 && request.status == 200) {
-            theData = request.responseText;
-            schedules = JSON.parse(theData);
-            for (var i = 0; i < stations.length; i++) {
-                addStation(stations[i], map, i);
+        if (request.readyState == 4) {
+            if (request.status === 200) {
+                theData = request.responseText;
+                schedules = JSON.parse(theData);
+                for (var i = 0; i < stations.length; i++) {
+                    addStation(stations[i], map, i);
+                }
+            } else {
+                alert("Something went wrong. Sorry! Please refresh.");
             }
-        } else if (request.readyState == 4 && request.status != 200) {
-            alert("Something went wrong. Sorry! Please refresh.");
         }
     }
+    //if (request.status != 200) request.abort();
     request.send();
-				
+
 	// Center map to my location
 	map.panTo(me);
 
@@ -236,6 +239,9 @@ function addStation(station, map, ind) {
     var schedString = "To Alewife in " + plural(nextC); // All trains go to Alewife
     if (ind < 17) schedString += "<br/>To Ashmont in " + plural(nextA);
     if (ind > 16 || ind < 13) schedString += "<br/>To Braintree in " + plural(nextB);
+    if (schedules["TripList"]["Trips"].length == 0) { // if the T is closed.
+        schedString = "The T is closed now. Please check back later.";
+    }
     var pos = new google.maps.LatLng(station.stop_lat, station.stop_long);
 	var stationMarker = new google.maps.Marker({
 		position: pos,
