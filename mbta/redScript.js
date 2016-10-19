@@ -210,34 +210,37 @@ function renderMap(map) {
 }
 
 function addStation(station, map, ind) {
-    var nextA = schedules["TripList"]["Trips"][0]["Predictions"][0]; // to Ashmont
-    var nextB = schedules["TripList"]["Trips"][0]["Predictions"][0]; // to Braintree
-    var nextC = schedules["TripList"]["Trips"][0]["Predictions"][0]; // to Alewife
     // letters are as indicated on 01800s cars on the T.
+    var nextA = Number.MAX_SAFE_INTEGER; // to Ashmont
+    var nextB = Number.MAX_SAFE_INTEGER; // to Braintree
+    var nextC = Number.MAX_SAFE_INTEGER; // to Alewife
     var schedString = "";
     for (var i = 0; i < schedules["TripList"]["Trips"].length; i++) {
         for (var j = 0; j < schedules["TripList"]["Trips"][i]["Predictions"].length; j++) {
-            if (schedules["TripList"]["Trips"][i]["Predictions"][j]["Stop"] == station.stop_name) {
+            var alog = schedules["TripList"]["Trips"][i]["Predictions"][j];
+            if (alog["Stop"] == station.stop_name && alog["Seconds"] > 0) {
                 console.log(schedules["TripList"]["Trips"][i]["Destination"]);
-                console.log(schedules["TripList"]["Trips"][i]["Predictions"][j]);
-                if (schedules["TripList"]["Trips"][i]["Destination"] == "Alewife") {
-                    nextC = schedules["TripList"]["Trips"][i]["Predictions"][j];
+                console.log(alog);
+                if (schedules["TripList"]["Trips"][i]["Destination"] == "Alewife" && alog["Seconds"] < nextC) {
+                    nextC = alog["Seconds"];
                 }
-                if (schedules["TripList"]["Trips"][i]["Destination"] == "Ashmont") {
-                    nextA = schedules["TripList"]["Trips"][i]["Predictions"][j];
+                if (schedules["TripList"]["Trips"][i]["Destination"] == "Ashmont" && alog["Seconds"] < nextA) {
+                    nextA = alog["Seconds"];
                 } 
-                if (schedules["TripList"]["Trips"][i]["Destination"] == "Braintree") {
-                    nextB = schedules["TripList"]["Trips"][i]["Predictions"][j];
+                if (schedules["TripList"]["Trips"][i]["Destination"] == "Braintree" && alog["Seconds"] < nextB) {
+                    nextB = alog["Seconds"];
                 }
             }
         }
     }
-    schedString = "To Alewife in " + nextC["Seconds"];
-	var pos = new google.maps.LatLng(station.stop_lat, station.stop_long);
+    schedString = "To Alewife in " + nextC + " seconds.<br/>"; // All trains go to Alewife
+    schedString += "To Ashmont in " + nextA + " seconds.<br/>";
+    schedString += "To Braintree in " + nextB + " seconds.";
+    var pos = new google.maps.LatLng(station.stop_lat, station.stop_long);
 	var stationMarker = new google.maps.Marker({
 		position: pos,
         icon: "t.png",
-		title: (station.stop_name + "<br/>Next trains:<br/>" + schedString)
+		title: (station.stop_name + "<br/><br/>Next trains:<br/>" + schedString)
 	});
 	stationMarker.setMap(map);
 	// Add info marker/click event for each station
