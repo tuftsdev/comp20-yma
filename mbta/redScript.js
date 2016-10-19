@@ -234,13 +234,13 @@ function addStation(station, map, ind) {
         }
     }
     schedString = "To Alewife in " + nextC + " seconds.<br/>"; // All trains go to Alewife
-    schedString += "To Ashmont in " + nextA + " seconds.<br/>";
-    schedString += "To Braintree in " + nextB + " seconds.";
+    if (ind < 17) schedString += "To Ashmont in " + nextA + " seconds.<br/>";
+    if (ind > 16 || ind < 13) schedString += "To Braintree in " + nextB + " seconds.";
     var pos = new google.maps.LatLng(station.stop_lat, station.stop_long);
 	var stationMarker = new google.maps.Marker({
 		position: pos,
         icon: "t.png",
-		title: (station.stop_name + "<br/><br/>Next trains:<br/>" + schedString)
+		title: ("<h3>" + station.stop_name + "</h3>Next trains:<br/>" + schedString)
 	});
 	stationMarker.setMap(map);
 	// Add info marker/click event for each station
