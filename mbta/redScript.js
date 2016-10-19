@@ -214,13 +214,10 @@ function addStation(station, map, ind) {
     var nextA = Number.MAX_SAFE_INTEGER; // to Ashmont
     var nextB = Number.MAX_SAFE_INTEGER; // to Braintree
     var nextC = Number.MAX_SAFE_INTEGER; // to Alewife
-    var schedString = "";
     for (var i = 0; i < schedules["TripList"]["Trips"].length; i++) {
         for (var j = 0; j < schedules["TripList"]["Trips"][i]["Predictions"].length; j++) {
             var alog = schedules["TripList"]["Trips"][i]["Predictions"][j];
             if (alog["Stop"] == station.stop_name && alog["Seconds"] > 0) {
-                console.log(schedules["TripList"]["Trips"][i]["Destination"]);
-                console.log(alog);
                 if (schedules["TripList"]["Trips"][i]["Destination"] == "Alewife" && alog["Seconds"] < nextC) {
                     nextC = alog["Seconds"];
                 }
@@ -233,9 +230,12 @@ function addStation(station, map, ind) {
             }
         }
     }
-    schedString = "To Alewife in " + nextC + " seconds.<br/>"; // All trains go to Alewife
-    if (ind < 17) schedString += "To Ashmont in " + nextA + " seconds.<br/>";
-    if (ind > 16 || ind < 13) schedString += "To Braintree in " + nextB + " seconds.";
+    nextA = Math.ceil(nextA / 60);
+    nextB = Math.ceil(nextB / 60);
+    nextC = Math.ceil(nextC / 60);
+    var schedString = "To Alewife in " + plural(nextC); // All trains go to Alewife
+    if (ind < 17) schedString += "<br/>To Ashmont in " + plural(nextA);
+    if (ind > 16 || ind < 13) schedString += "<br/>To Braintree in " + plural(nextB);
     var pos = new google.maps.LatLng(station.stop_lat, station.stop_long);
 	var stationMarker = new google.maps.Marker({
 		position: pos,
@@ -263,4 +263,9 @@ function makeLine(coords, colour) {
 
 function toRad(r) {
     return r * Math.PI / 180;
+}
+
+function plural(t) {
+    if (t == 1) return "" + t + " minute.";
+    else return "" + t + " minutes.";
 }
