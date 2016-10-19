@@ -296,7 +296,7 @@ function makeLine(coords, colour) {
 }
 
 /* Returns an angle (difference between 2 lat coordinates or 2 long coordinates)
- * in radians.
+ * in radians. Used for the Haversine formula.
  */
 function toRad(r) {
     return r * Math.PI / 180;
