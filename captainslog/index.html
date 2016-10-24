@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Captain's Log</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+      // Your work will be done here...
+        $(document).ready(function(){
+            for (var i = localStorage.length - 1; i >= 0; i--) {
+                var alog = localStorage[i];
+                $("#log").append("<p>" + localStorage.key(i) + " - " + localStorage.getItem(localStorage.key(i)) + "</p>");
+            }
+            $("#msg").change(function(){
+                var alog = $("input:text").val();
+                var key = new Date()
+                localStorage[key] = alog;
+                var markup = $("#log").html();
+                markup = ("<p>" + key + " - " + localStorage[key] + "</p>") + markup;
+                $("#log").empty();
+                $("#log").append(markup);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Captain's Log</h1>
+    <h3>New entry: <input type="text" id="msg" name="msg" size="30" /></h3>
+    <div id="log"></div>
+</body>
+</html>
