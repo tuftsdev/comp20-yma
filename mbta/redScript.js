@@ -132,7 +132,7 @@ function renderMap(map) {
 	me = new google.maps.LatLng(myLat, myLng);
 
     // Get train info from the T's API and add to each station marker.
-    request.open("get", "https://rocky-taiga-26352.herokuapp.com/redline.json", true);
+    request.open("get", "https://intense-waters-94287.herokuapp.com/redline.json", true);
     request.onreadystatechange = function() {
         if (request.readyState == 4) {
             if (request.status === 200) { // successful response
