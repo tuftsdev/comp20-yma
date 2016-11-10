@@ -43,12 +43,12 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
         var dataEntry = {
           username : user,
           score : self.score,
-          grid : JSON.stringify(grid),
-          created_at: new Date()
+          grid : JSON.stringify(grid)
         };
-        // Post
-        $.post("http://localhost:5000/submit.json", dataEntry, function() {
-          alert("Posted successfully");
+        // Post, with a little jQuery
+        $.post("https://intense-waters-94287.herokuapp.com/submit.json", dataEntry, function() {
+          // Success feedback to user
+          alert("Posted successfully. Check https://intense-waters-94287.herokuapp.com for high scores.");
         });
       } else alert("Ok, your score won't be recorded.");
     }
