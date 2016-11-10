@@ -24,13 +24,33 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
     self.updateScore(metadata.score);
     self.updateBestScore(metadata.bestScore);
 
+    // The changes I made are here.
+    // Process for when the game ends.
     if (metadata.terminated) {
-      	console.log("grid", grid);
+      var msg = "";
       if (metadata.over) {
         self.message(false); // You lose
+        msg += "Your game is over. ";
       } else if (metadata.won) {
         self.message(true); // You win!
+        msg += "You won! Alright! ";
       }
+      msg += "Enter your name to record your score! Sorry for delaying the ending.";
+      var user = window.prompt(msg); // Get username
+      // Only send score if user entered an actual username.
+      if (user != null && user != "") {
+        // Create entry for database
+        var dataEntry = {
+          username : user,
+          score : self.score,
+          grid : JSON.stringify(grid),
+          created_at: new Date()
+        };
+        // Post
+        $.post("http://localhost:5000/submit.json", dataEntry, function() {
+          alert("Posted successfully");
+        });
+      } else alert("Ok, your score won't be recorded.");
     }
 
   });
