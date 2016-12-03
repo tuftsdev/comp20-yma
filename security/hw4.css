@@ -7,12 +7,18 @@
  */
 
 body {
-	background-color: rgb(200, 250, 10);
+	background-color: rgb(250, 250, 100);
 	padding: 60px;
 }
 
 #header {
 	text-align: center;
+	font-family: "Lucida Sans Unicode";
+	font-size: 48px;
+}
+
+#header, h4 {
+	font-size: 24px;
 }
 
 h3 {
