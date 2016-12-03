@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Philip Ma's Security Analysis</title>
+		<link rel="stylesheet" href="hw4.css"/>
+	</head>
+
+	<body>
+		<div id="header">
+			<h1>Security Analysis of 2048 Game Center Web App</h1>
+			<h4>Philip Ma</h4>
+		</div>
+		
+		<h3>Intro:</h3>
+		<p>The product analyzed is the server-side application Game Center for the game 2048, which has various security and privacy vulnerabilities. I was hired as a security consultant to document the security issues in this application.</p>
+
+		<h3>Methodology:</h3>
+		<p>Analyzed the server-side source code for the application for possible vulnerabilities, then performed various attacks on the application to see if its security is compromised.</p>
+
+		<h3>Abstract:</h3>
+	
+
+		<h3>Issues Found:</h3>
+		<ol>
+			<li>XSS in inserting username-in POST /submit.json. This has high severity, as XSS is generally a big security issue, because it can be used to steal another user's login credentials or to deface a web page. In POST /submit.json, the username, a string, can be put directly into the app's database without screening. Then, in GET /, each and every username is displayed in HTML format. If the username is a script, then it can be executed when GET / is loaded. I simply ran curl with a script as the username on POST /submit.json, then found that my script ran when I accessed GET /. I could have redirected the user of his app to some malicious website by doing this. To prevent this, replace the special characters in the username string with the following code:<br />
+			<tt>user = user.replace(/[^\w\s]/gi, ''); // user is username to be put into database.</tt>
+			</li>
+			<li>script to send tons of data to overload app's database</li>
+			<li></li>
+		</ol>
+
+	</body>
+</html>

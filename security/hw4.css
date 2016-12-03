@@ -1,0 +1,23 @@
+/*
+ * Philip Ma
+ * 12/6/16 (my 21st)
+ * Comp 20 assignment 4
+ * hw4.css
+ * Styling for the assignment 4 security report web page.
+ */
+
+body {
+	background-color: rgb(200, 250, 10);
+	padding: 60px;
+}
+
+#header {
+	text-align: center;
+}
+
+h3 {
+	font-family: Arial;
+}
+p, li {
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
