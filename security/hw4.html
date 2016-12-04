@@ -2,34 +2,44 @@
 
 <html>
 	<head>
+		<meta charset="utf-8" />
 		<title>Philip Ma's Security Analysis</title>
-		<link rel="stylesheet" href="hw4.css"/>
-		<link rel="shortcut icon" href="favicon.ico">
+		<link rel="stylesheet" href="hw4.css" />
+		<link rel="shortcut icon" href="favicon.ico" />
 	</head>
 
 	<body>
 		<div id="header">
 			<h1>Security Analysis of 2048 Game Center Web App</h1>
-			<h4>Philip Ma</h4>
+			<h4><a href="https://yichuanma95.github.io/">Philip Ma</a></h4>
 		</div>
 		
 		<h3>Intro:</h3>
-		<p>The product analyzed is the server-side application Game Center for the game 2048, which has various security and privacy vulnerabilities. I was hired as a security consultant to document the security issues in this application.</p>
+		<p>The product analyzed is the server-side application Game Center for the game 2048 (https://aqueous-beyond-90325.herokuapp.com/), which was done for Assignment 3 and has various security and privacy vulnerabilities. I was hired as a security consultant to document and analyze the security issues in this application.</p>
 
 		<h3>Methodology:</h3>
-		<p>Analyzed the server-side source code for the application for possible vulnerabilities, then performed various attacks on the application to see if its security is compromised.</p>
+		<p>Analyzed the server-side source code for the application for possible vulnerabilities, then performed various attacks on the application to see if its security is compromised.
+		<br />Tools used: <tt>curl</tt> and a script that sends HTTP requests to his app.</p>
 
 		<h3>Abstract:</h3>
-	
+		<p></p>
 
 		<h3>Issues Found:</h3>
 		<ol>
-			<li>XSS in inserting username-in POST /submit.json. This has high severity, as XSS is generally a big security issue, because it can be used to steal another user's login credentials or to deface a web page. In POST /submit.json, the username, a string, can be put directly into the app's database without screening. Then, in GET /, each and every username is displayed in HTML format. If the username is a script, then it can be executed when GET / is loaded. I simply ran curl with a script as the username on POST /submit.json, then found that my script ran when I accessed GET /. I could have redirected the user of his app to some malicious website by doing this. To prevent this, replace the special characters in the username string with the following code:<br />
-			<tt>user = user.replace(/[^\w\s]/gi, ''); // user is username to be put into database.</tt>
-			</li>
-			<li>script to send tons of data to overload app's database</li>
+			<li>A bad programming practice of trusting any user input that is sent into the app's POST /submit.json route, which takes in username (string), score (number), and grid (JSON string). The username and score can be displayed in the response page of GET /, along with a timestamp, a <tt>Date()</tt> object automatically created within POST /submit.json, in HTML format. The score can be converted into an integer type, but the username is unchecked as it is inserted into the app's database. This allows for cross-site scripting (XSS) via sending scripts embedded in script HTML tags as usernames to POST /submit.json. XSS has high severity, as it's generally a big and common security issue, because it can be used to steal another user's login credentials or to deface a web page. The following command on a terminal is how I tested the vulnerability:<br />
+			<tt>curl --data "username=&lt;script&gt;alert(\"H@ck3d by Phil\");&lt;/script&gt;&amp;score=666&amp;grid={}" https://aqueous-beyond-90325.herokuapp.com/submit.json</tt><br />
+			The result on GET / is shown below:<br />
+			<img src="screenshot1.png" alt="XSS result screenshot" /><br />
+			As seen above, the script injected into the HTML ran when the page was loaded, thus displaying the <tt>alert()</tt> dialog. With this, I could have redirected the user to some malicious website or inserted some image in there. To prevent this attack, the app's developer should use regex to replace the special characters in the username string, like this:<br />
+			<tt>user = user.replace(/[^\w\s]/gi, ''); // user is username to be put into database.</tt><br />
+			Generally, user input should never be trusted in a POST request. Plus, the developer should limit who can send the requests when enabling cross-origin request sharing (CORS) for POST /submit.json, rather than use <tt>*</tt> for CORS.</li>
+
+			<li>A way to inject data into the app's database. With CORS enabled for everyone with <tt>*</tt> in POST /submit.json, someone evil can write and run a simple script that sends an object with a bogus username, score, and grid in a HTTP request to that route many many times to overload the database and prevent another user from submitting a high score to this app. This has low to moderate severity, because the user will be unable to use the app normally to submit 2048 high scores, despite not having anything stolen. Plus, as this is a Heroku app, it has a mLab MongoDB add-on, which is its database, with the basic free plan (Sandbox), so its storage capacity is limited. This allows for the database to be overloaded quite easily. I tested this vulnerability by running a script that repeatedly sends an object with username "masterful" and score 25000 (high so it can be at the top) to this app's server. Back to the screenshot above, there are the recurring entries with the same data displayed, which means that my script worked. To prevent this attack, the developer should restrict CORS by not using <tt>*</tt> in the server-side code.</li>
+
 			<li></li>
 		</ol>
 
+		<h3>Conclusion:</h3>
+		<p></p>
 	</body>
 </html>
