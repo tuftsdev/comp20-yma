@@ -19,10 +19,10 @@
 
 		<h3>Methodology:</h3>
 		<p>Analyzed the server-side source code for the application for possible vulnerabilities, then performed various attacks on the application to see if its security is compromised.
-		<br />Tools used: <tt>curl</tt> and a script that sends HTTP requests to his app.</p>
+		<br />Tools used: <tt>curl</tt>, Burp suite, and a script that sends HTTP requests to his app, that is, HTML and JavaScript w/jQuery, then Chrome and Firefox.</p>
 
 		<h3>Abstract:</h3>
-		<p></p>
+		<p>For this analysis, I demonstrate and document three attacks on the application. The attacks performed are cross-site scripting (XSS), database injection, and interception of POST request data with a proxy, that is, a proxy attack. XSS and the database injection can be prevented with restriction of cross-origin request sharing (CORS), while the proxy attack cannot be. Further, XSS can be prevented by removing special characters in the part of the POST request body that will be displayed later in another GET page.</p>
 
 		<h3>Issues Found:</h3>
 		<ol>
@@ -36,10 +36,19 @@
 
 			<li>A way to inject data into the app's database. With CORS enabled for everyone with <tt>*</tt> in POST /submit.json, someone evil can write and run a simple script that sends an object with a bogus username, score, and grid in a HTTP request to that route many many times to overload the database and prevent another user from submitting a high score to this app. This has low to moderate severity, because the user will be unable to use the app normally to submit 2048 high scores, despite not having anything stolen. Plus, as this is a Heroku app, it has a mLab MongoDB add-on, which is its database, with the basic free plan (Sandbox), so its storage capacity is limited. This allows for the database to be overloaded quite easily. I tested this vulnerability by running a script that repeatedly sends an object with username "masterful" and score 25000 (high so it can be at the top) to this app's server. Back to the screenshot above, there are the recurring entries with the same data displayed, which means that my script worked. To prevent this attack, the developer should restrict CORS by not using <tt>*</tt> in the server-side code.</li>
 
-			<li></li>
+			<li>A Proxy attack can happen to all pages in this application. This has medium to high severity, as someone can use a proxy to intercept the request data going into the app and change it on the fly. For example, the Proxy hacker can change the request data to carry out XSS attacks without the app's user knowing it. I used Burp suite's proxy to intercept a POST request to /submit.json from Firefox to the application. This is how I sent a POST request from Firefox, with requestmaker.com:<br />
+			<img src="screenshot2.png" alt="sample POST request" /><br />
+			Below is a screenshot of the Burp proxy before modifying the request body:<br />
+			<img src="screenshot3.png" alt="In the proxy, before modifying body" /><br />
+			After modifying:<br />
+			<img src="screenshot4.png" alt="In the proxy, after modifying body" /><br />
+			Result of the attack, on GET /:<br />
+			<img src="screenshot5.png" alt="Modified entry highlighted" /><br />
+			This kind of attack can't really be defended, as stated in the answer to this <a href="https://piazza.com/class/ip0b2ahmlnk6d9?cid=353">Piazza post</a>. Even with CORS restricted, this app is still vulnerable.
+			</li>
 		</ol>
 
 		<h3>Conclusion:</h3>
-		<p></p>
+		<p>Based on the documentation of the attacks on the web application presented above, restriction of CORS can prevent most attacks. However, any and all user input into a web app via request should never be trusted. This fundamental on cyber security cannot be any clearer.</p>
 	</body>
 </html>
